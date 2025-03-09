@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class ConexaoDB {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/Pizzaria"; // Substitua pelo seu banco de dados
-    private static final String USER = "root"; // Substitua pelo seu usuário do banco
-    private static final String PASSWORD = "chatbot"; // Substitua pela senha do banco, se necessário
+    private static final String URL = "jdbc:mysql://localhost:3306/pizzaria"; 
+    private static final String USER = "root"; 
+    private static final String PASSWORD = "chatbot"; 
 
     public static Connection getConnection() throws SQLException {
         try {

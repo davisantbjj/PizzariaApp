@@ -2,27 +2,36 @@ package test;
 
 import dao.ClienteDAO;
 import model.Cliente;
+import java.util.List;
 
 public class ClienteTeste {
     public static void main(String[] args) {
         ClienteDAO clienteDAO = new ClienteDAO();
-        
-        // Testando inserção de cliente
-        Cliente cliente = new Cliente(0, "João Silva", "joao@gmail.com", "123456789", "Rua 1");
-        boolean inserido = clienteDAO.inserirCliente(cliente);
+
+        // Criar um novo cliente
+        Cliente novoCliente = new Cliente(0, "João Silva", "11999998888", "Rua A, 123");
+        boolean inserido = clienteDAO.inserirCliente(novoCliente);
         System.out.println("Cliente inserido: " + inserido);
-        
-        // Testando consulta de clientes
+
+        // Listar clientes
+        List<Cliente> clientes = clienteDAO.consultarClientes();
         System.out.println("\nClientes cadastrados:");
-        clienteDAO.consultarClientes();
-        
-        // Testando atualização de cliente
-        cliente.setNome("João Silva Atualizado");
-        boolean atualizado = clienteDAO.atualizarCliente(cliente);
-        System.out.println("\nCliente atualizado: " + atualizado);
-        
-        // Testando exclusão de cliente
-        boolean deletado = clienteDAO.deletarCliente(cliente.getId());
-        System.out.println("\nCliente deletado: " + deletado);
+        for (Cliente c : clientes) {
+            System.out.println("ID: " + c.getId() + ", Nome: " + c.getNome() + ", Telefone: " + c.getTelefone() + ", Endereço: " + c.getEndereco());
+        }
+
+        // Atualizar cliente (se houver pelo menos um cliente cadastrado)
+        if (!clientes.isEmpty()) {
+            Cliente clienteParaAtualizar = clientes.get(0);
+            clienteParaAtualizar.setNome("João Atualizado");
+            boolean atualizado = clienteDAO.atualizarCliente(clienteParaAtualizar);
+            System.out.println("\nCliente atualizado: " + atualizado);
+        }
+
+        // Deletar cliente (se houver pelo menos um cliente cadastrado)
+        if (!clientes.isEmpty()) {
+            boolean deletado = clienteDAO.deletarCliente(clientes.get(0).getId());
+            System.out.println("\nCliente deletado: " + deletado);
+        }
     }
 }

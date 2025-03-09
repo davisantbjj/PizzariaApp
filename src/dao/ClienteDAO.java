@@ -1,82 +1,80 @@
 package dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import model.Cliente;
 
 public class ClienteDAO {
+   
+   public boolean inserirCliente(Cliente cliente) {
+      String sql = "INSERT INTO cliente (nome, telefone, endereco) VALUES (?, ?, ?)";
 
-    // Método para inserir um novo cliente no banco
-    public boolean inserirCliente(Cliente cliente) {
-        String query = "INSERT INTO cliente (nome, email, telefone, endereco) VALUES (?, ?, ?, ?)";
-        try (Connection con = ConexaoDB.getConnection(); 
-             PreparedStatement pst = con.prepareStatement(query)) {
-             
-            pst.setString(1, cliente.getNome());
-            pst.setString(2, cliente.getEmail());
-            pst.setString(3, cliente.getTelefone());
-            pst.setString(4, cliente.getEndereco());
-            
-            int rowsAffected = pst.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+      try (Connection conn = ConexaoDB.getConnection();
+           PreparedStatement stmt = conn.prepareStatement(sql)) {
+         
+         stmt.setString(1, cliente.getNome());
+         stmt.setString(2, cliente.getTelefone());
+         stmt.setString(3, cliente.getEndereco());
+         int linhasAfetadas = stmt.executeUpdate();
 
-    // Método para consultar todos os clientes
-    public void consultarClientes() {
-        String query = "SELECT * FROM cliente";
-        try (Connection con = ConexaoDB.getConnection(); 
-             Statement stmt = con.createStatement(); 
-             ResultSet rs = stmt.executeQuery(query)) {
-             
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String nome = rs.getString("nome");
-                String email = rs.getString("email");
-                String telefone = rs.getString("telefone");
-                String endereco = rs.getString("endereco");
-                System.out.println("ID: " + id + ", Nome: " + nome + ", Email: " + email + 
-                                   ", Telefone: " + telefone + ", Endereço: " + endereco);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+         return linhasAfetadas > 0;
+      } catch (SQLException e) {
+         System.out.println("Erro ao inserir cliente: " + e.getMessage());
+         return false;
+      }
+   }
 
-    // Método para atualizar um cliente no banco de dados
-    public boolean atualizarCliente(Cliente cliente) {
-        String query = "UPDATE cliente SET nome = ?, email = ?, telefone = ?, endereco = ? WHERE id = ?";
-        try (Connection con = ConexaoDB.getConnection(); 
-             PreparedStatement pst = con.prepareStatement(query)) {
-             
-            pst.setString(1, cliente.getNome());
-            pst.setString(2, cliente.getEmail());
-            pst.setString(3, cliente.getTelefone());
-            pst.setString(4, cliente.getEndereco());
-            pst.setInt(5, cliente.getId());
-            
-            int rowsAffected = pst.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+   public void consultarClientes() {
+      String sql = "SELECT * FROM cliente";
 
-    // Método para deletar um cliente do banco de dados
-    public boolean deletarCliente(int id) {
-        String query = "DELETE FROM cliente WHERE id = ?";
-        try (Connection con = ConexaoDB.getConnection(); 
-             PreparedStatement pst = con.prepareStatement(query)) {
-             
-            pst.setInt(1, id);
-            int rowsAffected = pst.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+      try (Connection conn = ConexaoDB.getConnection();
+           PreparedStatement stmt = conn.prepareStatement(sql);
+           ResultSet rs = stmt.executeQuery()) {
+         
+         while (rs.next()) {
+            int id = rs.getInt("id_cliente"); // Correção aqui
+            String nome = rs.getString("nome");
+            String telefone = rs.getString("telefone");
+            String endereco = rs.getString("endereco");
+
+            System.out.println("ID: " + id + ", Nome: " + nome + ", Telefone: " + telefone + ", Endereço: " + endereco);
+         }
+      } catch (SQLException e) {
+         System.out.println("Erro ao consultar clientes: " + e.getMessage());
+      }
+   }
+
+   public boolean atualizarCliente(Cliente cliente) {
+      String sql = "UPDATE cliente SET nome = ?, telefone = ?, endereco = ? WHERE id_cliente = ?";
+
+      try (Connection conn = ConexaoDB.getConnection();
+           PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+         stmt.setString(1, cliente.getNome());
+         stmt.setString(2, cliente.getTelefone());
+         stmt.setString(3, cliente.getEndereco());
+         stmt.setInt(4, cliente.getId());
+
+         return stmt.executeUpdate() > 0;
+      } catch (SQLException e) {
+         System.out.println("Erro ao atualizar cliente: " + e.getMessage());
+         return false;
+      }
+   }
+
+   public boolean deletarCliente(int id) {
+      String sql = "DELETE FROM cliente WHERE id_cliente = ?";
+
+      try (Connection conn = ConexaoDB.getConnection();
+           PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+         stmt.setInt(1, id);
+         return stmt.executeUpdate() > 0;
+      } catch (SQLException e) {
+         System.out.println("Erro ao deletar cliente: " + e.getMessage());
+         return false;
+      }
+   }
 }
